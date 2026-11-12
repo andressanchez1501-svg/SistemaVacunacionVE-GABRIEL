@@ -1,109 +1,25 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.3
--- https://www.phpmyadmin.net/
---
--- Servidor: 127.0.0.1
--- Tiempo de generación: 11-11-2026 a las 07:29:18
--- Versión del servidor: 10.11.16-MariaDB
--- Versión de PHP: 8.3.36
+-- Base de Datos: `sistema_vacunacion`
+-- Versión Nivel Profesional / Producción
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- Base de datos: `sistema_vacunacion`
---
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `centros`
---
-
-CREATE TABLE `centros` (
-  `id_centros` int(11) NOT NULL,
-  `nombre` varchar(150) NOT NULL,
-  `direccion` text NOT NULL,
-  `telf` varchar(30) DEFAULT NULL,
-  `id_parroquia` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `certsalud`
---
-
-CREATE TABLE `certsalud` (
-  `id_cert` int(11) NOT NULL,
-  `id_personas` int(11) NOT NULL,
-  `id_examenes` int(11) DEFAULT NULL,
-  `id_registro` int(11) DEFAULT NULL,
-  `estatus` varchar(50) DEFAULT 'Pendiente',
-  `observaciones` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `estado`
 --
-
 CREATE TABLE `estado` (
-  `id_estado` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `examenes`
---
-
-CREATE TABLE `examenes` (
-  `id_examenes` int(11) NOT NULL,
-  `id_personas` int(11) NOT NULL,
-  `nombre_archivo` varchar(255) NOT NULL,
-  `ruta_archivo` varchar(255) NOT NULL,
-  `fecha_carga` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `logs`
---
-
-CREATE TABLE `logs` (
-  `id_log` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `accion` enum('INSERT','UPDATE','DELETE','APROBAR') NOT NULL,
-  `tabla_afectada` varchar(100) NOT NULL,
-  `descripcion_detalle` text DEFAULT NULL,
-  `fecha_hora` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `lote_vacuna`
---
-
-CREATE TABLE `lote_vacuna` (
-  `id_lote` int(11) NOT NULL,
-  `id_vacuna` int(11) NOT NULL,
-  `numero_lote` varchar(100) NOT NULL,
-  `fecha_vencimiento` date NOT NULL,
-  `cantidad_recibida` int(11) NOT NULL,
-  `cantidad_disponible` int(11) NOT NULL,
-  `id_centros` int(11) NOT NULL
+  `id_estado` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  PRIMARY KEY (`id_estado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -111,11 +27,13 @@ CREATE TABLE `lote_vacuna` (
 --
 -- Estructura de tabla para la tabla `municipio`
 --
-
 CREATE TABLE `municipio` (
-  `id_municipio` int(11) NOT NULL,
+  `id_municipio` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(100) NOT NULL,
-  `id_estado` int(11) NOT NULL
+  `id_estado` int(11) NOT NULL,
+  PRIMARY KEY (`id_municipio`),
+  KEY `id_estado` (`id_estado`),
+  CONSTRAINT `fk_municipio_estado` FOREIGN KEY (`id_estado`) REFERENCES `estado` (`id_estado`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -123,55 +41,13 @@ CREATE TABLE `municipio` (
 --
 -- Estructura de tabla para la tabla `parroquia`
 --
-
 CREATE TABLE `parroquia` (
-  `id_parroquia` int(11) NOT NULL,
+  `id_parroquia` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(100) NOT NULL,
-  `id_municipio` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `personas`
---
-
-CREATE TABLE `personas` (
-  `id_personas` int(11) NOT NULL,
-  `cedula` varchar(20) NOT NULL,
-  `nombres` varchar(100) NOT NULL,
-  `apellidos` varchar(100) NOT NULL,
-  `fecha_nacimiento` date NOT NULL,
-  `correo` varchar(100) DEFAULT NULL,
-  `telefono` varchar(30) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `registrodosis`
---
-
-CREATE TABLE `registrodosis` (
-  `id_registro` int(11) NOT NULL,
-  `id_personas` int(11) NOT NULL,
-  `id_vacunas` int(11) NOT NULL,
-  `id_lote` int(11) NOT NULL,
-  `id_centros` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `fecha_aplicacion` timestamp NULL DEFAULT current_timestamp(),
-  `nro_dosis` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `roles`
---
-
-CREATE TABLE `roles` (
-  `id_rol` int(11) NOT NULL,
-  `nombre_rol` varchar(50) NOT NULL
+  `id_municipio` int(11) NOT NULL,
+  PRIMARY KEY (`id_parroquia`),
+  KEY `id_municipio` (`id_municipio`),
+  CONSTRAINT `fk_parroquia_municipio` FOREIGN KEY (`id_municipio`) REFERENCES `municipio` (`id_municipio`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -179,11 +55,40 @@ CREATE TABLE `roles` (
 --
 -- Estructura de tabla para la tabla `subregion`
 --
-
 CREATE TABLE `subregion` (
-  `id_subregion` int(11) NOT NULL,
+  `id_subregion` int(11) NOT NULL AUTO_INCREMENT,
   `nombre_subregion` varchar(100) NOT NULL,
-  `id_municipio` int(11) NOT NULL
+  `id_municipio` int(11) NOT NULL,
+  PRIMARY KEY (`id_subregion`),
+  KEY `id_municipio` (`id_municipio`),
+  CONSTRAINT `fk_subregion_municipio` FOREIGN KEY (`id_municipio`) REFERENCES `municipio` (`id_municipio`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `centros`
+--
+CREATE TABLE `centros` (
+  `id_centros` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(150) NOT NULL,
+  `direccion` text NOT NULL,
+  `telf` varchar(30) DEFAULT NULL,
+  `id_parroquia` int(11) NOT NULL,
+  PRIMARY KEY (`id_centros`),
+  KEY `id_parroquia` (`id_parroquia`),
+  CONSTRAINT `fk_centros_parroquia` FOREIGN KEY (`id_parroquia`) REFERENCES `parroquia` (`id_parroquia`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `roles`
+--
+CREATE TABLE `roles` (
+  `id_rol` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre_rol` varchar(50) NOT NULL,
+  PRIMARY KEY (`id_rol`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -191,295 +96,205 @@ CREATE TABLE `subregion` (
 --
 -- Estructura de tabla para la tabla `usuario`
 --
-
 CREATE TABLE `usuario` (
-  `id_usuario` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL AUTO_INCREMENT,
   `nombre_usuario` varchar(50) NOT NULL,
   `clave` varchar(255) NOT NULL,
   `id_rol` int(11) NOT NULL,
-  `id_centros` int(11) DEFAULT NULL
+  `id_centros` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id_usuario`),
+  UNIQUE KEY `nombre_usuario` (`nombre_usuario`),
+  KEY `id_rol` (`id_rol`),
+  KEY `id_centros` (`id_centros`),
+  CONSTRAINT `fk_usuario_rol` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_usuario_centro` FOREIGN KEY (`id_centros`) REFERENCES `centros` (`id_centros`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `vacunas`
+-- Estructura de tabla para la tabla `logs`
 --
-
-CREATE TABLE `vacunas` (
-  `id_vacunas` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL
+CREATE TABLE `logs` (
+  `id_log` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `accion` enum('INSERT','UPDATE','DELETE','APROBAR') NOT NULL,
+  `tabla_afectada` varchar(100) NOT NULL,
+  `descripcion_detalle` text DEFAULT NULL,
+  `fecha_hora` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_log`),
+  KEY `id_usuario` (`id_usuario`),
+  CONSTRAINT `fk_logs_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Índices para tablas volcadas
---
+-- --------------------------------------------------------
 
 --
--- Indices de la tabla `centros`
+-- Estructura de tabla para la tabla `personas`
 --
-ALTER TABLE `centros`
-  ADD PRIMARY KEY (`id_centros`),
-  ADD KEY `id_parroquia` (`id_parroquia`);
+CREATE TABLE `personas` (
+  `id_personas` int(11) NOT NULL AUTO_INCREMENT,
+  `cedula` varchar(20) NOT NULL,
+  `nombres` varchar(100) NOT NULL,
+  `apellidos` varchar(100) NOT NULL,
+  `fecha_nacimiento` date NOT NULL,
+  `correo` varchar(100) DEFAULT NULL,
+  `telefono` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id_personas`),
+  UNIQUE KEY `cedula` (`cedula`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
--- Indices de la tabla `certsalud`
+-- NUEVA TABLA: `fabricante`
 --
-ALTER TABLE `certsalud`
-  ADD PRIMARY KEY (`id_cert`),
-  ADD KEY `id_personas` (`id_personas`),
-  ADD KEY `id_examenes` (`id_examenes`),
-  ADD KEY `id_registro` (`id_registro`);
+CREATE TABLE `fabricante` (
+  `id_fabricante` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre_laboratorio` varchar(150) NOT NULL,
+  `pais_origen` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id_fabricante`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
--- Indices de la tabla `estado`
+-- Estructura de tabla para la tabla `vacunas` (Actualizada con FK a fabricante)
 --
-ALTER TABLE `estado`
-  ADD PRIMARY KEY (`id_estado`);
+CREATE TABLE `vacunas` (
+  `id_vacuna` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `id_fabricante` int(11) DEFAULT NULL,
+  `descripcion` text DEFAULT NULL,
+  PRIMARY KEY (`id_vacuna`),
+  KEY `id_fabricante` (`id_fabricante`),
+  CONSTRAINT `fk_vacunas_fabricante` FOREIGN KEY (`id_fabricante`) REFERENCES `fabricante` (`id_fabricante`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
--- Indices de la tabla `examenes`
+-- NUEVA TABLA: `esquema_vacunacion`
 --
-ALTER TABLE `examenes`
-  ADD PRIMARY KEY (`id_examenes`),
-  ADD KEY `id_personas` (`id_personas`);
+CREATE TABLE `esquema_vacunacion` (
+  `id_esquema` int(11) NOT NULL AUTO_INCREMENT,
+  `id_vacuna` int(11) NOT NULL,
+  `nro_dosis` int(11) NOT NULL,
+  `dias_intervalo` int(11) NOT NULL DEFAULT 0, -- Días de espera requeridos para la siguiente dosis
+  `edad_minima_meses` int(11) DEFAULT 0,
+  PRIMARY KEY (`id_esquema`),
+  KEY `id_vacuna` (`id_vacuna`),
+  CONSTRAINT `fk_esquema_vacuna` FOREIGN KEY (`id_vacuna`) REFERENCES `vacunas` (`id_vacuna`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
--- Indices de la tabla `logs`
+-- Estructura de tabla para la tabla `lote_vacuna`
 --
-ALTER TABLE `logs`
-  ADD PRIMARY KEY (`id_log`),
-  ADD KEY `id_usuario` (`id_usuario`);
+CREATE TABLE `lote_vacuna` (
+  `id_lote` int(11) NOT NULL AUTO_INCREMENT,
+  `id_vacuna` int(11) NOT NULL,
+  `numero_lote` varchar(100) NOT NULL,
+  `fecha_vencimiento` date NOT NULL,
+  `cantidad_recibida` int(11) NOT NULL CHECK (`cantidad_recibida` >= 0),
+  `cantidad_disponible` int(11) NOT NULL CHECK (`cantidad_disponible` >= 0),
+  `id_centros` int(11) NOT NULL,
+  PRIMARY KEY (`id_lote`),
+  KEY `id_vacuna` (`id_vacuna`),
+  KEY `id_centros` (`id_centros`),
+  CONSTRAINT `fk_lote_vacuna` FOREIGN KEY (`id_vacuna`) REFERENCES `vacunas` (`id_vacuna`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_lote_centro` FOREIGN KEY (`id_centros`) REFERENCES `centros` (`id_centros`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
--- Indices de la tabla `lote_vacuna`
+-- NUEVA TABLA: `cita_vacunacion`
 --
-ALTER TABLE `lote_vacuna`
-  ADD PRIMARY KEY (`id_lote`),
-  ADD KEY `id_vacuna` (`id_vacuna`),
-  ADD KEY `id_centro` (`id_centros`);
+CREATE TABLE `cita_vacunacion` (
+  `id_cita` int(11) NOT NULL AUTO_INCREMENT,
+  `id_personas` int(11) NOT NULL,
+  `id_vacuna` int(11) NOT NULL,
+  `id_centros` int(11) NOT NULL,
+  `fecha_programada` datetime NOT NULL,
+  `estatus` enum('Pendiente','Atendido','Cancelado') DEFAULT 'Pendiente',
+  PRIMARY KEY (`id_cita`),
+  KEY `id_personas` (`id_personas`),
+  KEY `id_vacuna` (`id_vacuna`),
+  KEY `id_centros` (`id_centros`),
+  CONSTRAINT `fk_cita_persona` FOREIGN KEY (`id_personas`) REFERENCES `personas` (`id_personas`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_cita_vacuna` FOREIGN KEY (`id_vacuna`) REFERENCES `vacunas` (`id_vacuna`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_cita_centro` FOREIGN KEY (`id_centros`) REFERENCES `centros` (`id_centros`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
--- Indices de la tabla `municipio`
+-- Estructura de tabla para la tabla `examenes`
 --
-ALTER TABLE `municipio`
-  ADD PRIMARY KEY (`id_municipio`),
-  ADD KEY `id_estado` (`id_estado`);
+CREATE TABLE `examenes` (
+  `id_examenes` int(11) NOT NULL AUTO_INCREMENT,
+  `id_personas` int(11) NOT NULL,
+  `nombre_archivo` varchar(255) NOT NULL,
+  `ruta_archivo` varchar(255) NOT NULL,
+  `fecha_carga` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_examenes`),
+  KEY `id_personas` (`id_personas`),
+  CONSTRAINT `fk_examenes_persona` FOREIGN KEY (`id_personas`) REFERENCES `personas` (`id_personas`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
--- Indices de la tabla `parroquia`
+-- Estructura de tabla para la tabla `registrodosis`
 --
-ALTER TABLE `parroquia`
-  ADD PRIMARY KEY (`id_parroquia`),
-  ADD KEY `id_municipio` (`id_municipio`);
+CREATE TABLE `registrodosis` (
+  `id_registro` int(11) NOT NULL AUTO_INCREMENT,
+  `id_personas` int(11) NOT NULL,
+  `id_vacuna` int(11) NOT NULL,
+  `id_lote` int(11) NOT NULL,
+  `id_centros` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `fecha_aplicacion` timestamp NULL DEFAULT current_timestamp(),
+  `nro_dosis` int(11) NOT NULL,
+  PRIMARY KEY (`id_registro`),
+  KEY `id_personas` (`id_personas`),
+  KEY `id_vacuna` (`id_vacuna`),
+  KEY `id_centros` (`id_centros`),
+  KEY `id_usuario` (`id_usuario`),
+  KEY `id_lote` (`id_lote`),
+  CONSTRAINT `fk_registrodosis_persona` FOREIGN KEY (`id_personas`) REFERENCES `personas` (`id_personas`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_registrodosis_vacuna` FOREIGN KEY (`id_vacuna`) REFERENCES `vacunas` (`id_vacuna`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_registrodosis_lote` FOREIGN KEY (`id_lote`) REFERENCES `lote_vacuna` (`id_lote`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_registrodosis_centro` FOREIGN KEY (`id_centros`) REFERENCES `centros` (`id_centros`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_registrodosis_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
--- Indices de la tabla `personas`
+-- Estructura de tabla para la tabla `certsalud`
 --
-ALTER TABLE `personas`
-  ADD PRIMARY KEY (`id_personas`),
-  ADD UNIQUE KEY `cedula` (`cedula`);
+CREATE TABLE `certsalud` (
+  `id_cert` int(11) NOT NULL AUTO_INCREMENT,
+  `id_personas` int(11) NOT NULL,
+  `id_examenes` int(11) DEFAULT NULL,
+  `id_registro` int(11) DEFAULT NULL,
+  `estatus` varchar(50) DEFAULT 'Pendiente',
+  `observaciones` text DEFAULT NULL,
+  PRIMARY KEY (`id_cert`),
+  KEY `id_personas` (`id_personas`),
+  KEY `id_examenes` (`id_examenes`),
+  KEY `id_registro` (`id_registro`),
+  CONSTRAINT `fk_certsalud_persona` FOREIGN KEY (`id_personas`) REFERENCES `personas` (`id_personas`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_certsalud_examenes` FOREIGN KEY (`id_examenes`) REFERENCES `examenes` (`id_examenes`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_certsalud_registro` FOREIGN KEY (`id_registro`) REFERENCES `registrodosis` (`id_registro`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Indices de la tabla `registrodosis`
---
-ALTER TABLE `registrodosis`
-  ADD PRIMARY KEY (`id_registro`),
-  ADD KEY `id_personas` (`id_personas`),
-  ADD KEY `id_vacunas` (`id_vacunas`),
-  ADD KEY `id_centros` (`id_centros`),
-  ADD KEY `id_usuario_registra` (`id_usuario`),
-  ADD KEY `fk_registrodosis_lote` (`id_lote`);
-
---
--- Indices de la tabla `roles`
---
-ALTER TABLE `roles`
-  ADD PRIMARY KEY (`id_rol`);
-
---
--- Indices de la tabla `subregion`
---
-ALTER TABLE `subregion`
-  ADD PRIMARY KEY (`id_subregion`),
-  ADD KEY `id_municipio` (`id_municipio`);
-
---
--- Indices de la tabla `usuario`
---
-ALTER TABLE `usuario`
-  ADD PRIMARY KEY (`id_usuario`),
-  ADD UNIQUE KEY `nombre_usuario` (`nombre_usuario`),
-  ADD KEY `id_rol` (`id_rol`),
-  ADD KEY `id_centros` (`id_centros`);
-
---
--- Indices de la tabla `vacunas`
---
-ALTER TABLE `vacunas`
-  ADD PRIMARY KEY (`id_vacunas`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `centros`
---
-ALTER TABLE `centros`
-  MODIFY `id_centros` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `certsalud`
---
-ALTER TABLE `certsalud`
-  MODIFY `id_cert` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `estado`
---
-ALTER TABLE `estado`
-  MODIFY `id_estado` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `examenes`
---
-ALTER TABLE `examenes`
-  MODIFY `id_examenes` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `logs`
---
-ALTER TABLE `logs`
-  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `lote_vacuna`
---
-ALTER TABLE `lote_vacuna`
-  MODIFY `id_lote` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `municipio`
---
-ALTER TABLE `municipio`
-  MODIFY `id_municipio` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `parroquia`
---
-ALTER TABLE `parroquia`
-  MODIFY `id_parroquia` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `personas`
---
-ALTER TABLE `personas`
-  MODIFY `id_personas` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `registrodosis`
---
-ALTER TABLE `registrodosis`
-  MODIFY `id_registro` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `roles`
---
-ALTER TABLE `roles`
-  MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `subregion`
---
-ALTER TABLE `subregion`
-  MODIFY `id_subregion` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `usuario`
---
-ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `vacunas`
---
-ALTER TABLE `vacunas`
-  MODIFY `id_vacunas` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- Restricciones para tablas volcadas
---
-
---
--- Filtros para la tabla `centros`
---
-ALTER TABLE `centros`
-  ADD CONSTRAINT `centros_ibfk_1` FOREIGN KEY (`id_parroquia`) REFERENCES `parroquia` (`id_parroquia`);
-
---
--- Filtros para la tabla `certsalud`
---
-ALTER TABLE `certsalud`
-  ADD CONSTRAINT `certsalud_ibfk_1` FOREIGN KEY (`id_personas`) REFERENCES `personas` (`id_personas`),
-  ADD CONSTRAINT `certsalud_ibfk_2` FOREIGN KEY (`id_examenes`) REFERENCES `examenes` (`id_examenes`),
-  ADD CONSTRAINT `certsalud_ibfk_3` FOREIGN KEY (`id_registro`) REFERENCES `registrodosis` (`id_registro`);
-
---
--- Filtros para la tabla `examenes`
---
-ALTER TABLE `examenes`
-  ADD CONSTRAINT `examenes_ibfk_1` FOREIGN KEY (`id_personas`) REFERENCES `personas` (`id_personas`);
-
---
--- Filtros para la tabla `logs`
---
-ALTER TABLE `logs`
-  ADD CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`);
-
---
--- Filtros para la tabla `lote_vacuna`
---
-ALTER TABLE `lote_vacuna`
-  ADD CONSTRAINT `lote_vacuna_ibfk_1` FOREIGN KEY (`id_vacuna`) REFERENCES `vacunas` (`id_vacunas`),
-  ADD CONSTRAINT `lote_vacuna_ibfk_2` FOREIGN KEY (`id_centros`) REFERENCES `centros` (`id_centros`);
-
---
--- Filtros para la tabla `municipio`
---
-ALTER TABLE `municipio`
-  ADD CONSTRAINT `municipio_ibfk_1` FOREIGN KEY (`id_estado`) REFERENCES `estado` (`id_estado`);
-
---
--- Filtros para la tabla `parroquia`
---
-ALTER TABLE `parroquia`
-  ADD CONSTRAINT `parroquia_ibfk_1` FOREIGN KEY (`id_municipio`) REFERENCES `municipio` (`id_municipio`);
-
---
--- Filtros para la tabla `registrodosis`
---
-ALTER TABLE `registrodosis`
-  ADD CONSTRAINT `fk_registrodosis_lote` FOREIGN KEY (`id_lote`) REFERENCES `lote_vacuna` (`id_lote`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `registrodosis_ibfk_1` FOREIGN KEY (`id_personas`) REFERENCES `personas` (`id_personas`),
-  ADD CONSTRAINT `registrodosis_ibfk_2` FOREIGN KEY (`id_vacunas`) REFERENCES `vacunas` (`id_vacunas`),
-  ADD CONSTRAINT `registrodosis_ibfk_3` FOREIGN KEY (`id_centros`) REFERENCES `centros` (`id_centros`),
-  ADD CONSTRAINT `registrodosis_ibfk_4` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`);
-
---
--- Filtros para la tabla `subregion`
---
-ALTER TABLE `subregion`
-  ADD CONSTRAINT `subregion_ibfk_1` FOREIGN KEY (`id_municipio`) REFERENCES `municipio` (`id_municipio`);
-
---
--- Filtros para la tabla `usuario`
---
-ALTER TABLE `usuario`
-  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`),
-  ADD CONSTRAINT `usuario_ibfk_2` FOREIGN KEY (`id_centros`) REFERENCES `centros` (`id_centros`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
